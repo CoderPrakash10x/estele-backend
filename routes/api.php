@@ -10,7 +10,7 @@ use App\Http\Controllers\PaymentController;
 use App\Models\User;
 
 
-Route::get('/setup-admin-xyz123', function () {
+Route::get('/setup-admin-xyz12', function () {
     $existing = User::where('email', 'admin@estele.com')->first();
     if ($existing) {
         return 'Admin already exists';
