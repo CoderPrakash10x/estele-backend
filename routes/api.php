@@ -7,24 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
-use App\Models\User;
 
-
-Route::get('/setup-admin-xyz12', function () {
-    $existing = User::where('email', 'admin@estele.com')->first();
-    if ($existing) {
-        return 'Admin already exists';
-    }
-
-    User::create([
-        'name' => 'Admin',
-        'email' => 'admin@estele.com',
-        'password' => bcrypt('admin123'),
-        'role' => 'admin',
-    ]);
-
-    return 'Admin created successfully';
-});
 
 // Admin login only
 Route::post('/login', [AuthController::class, 'login']);
