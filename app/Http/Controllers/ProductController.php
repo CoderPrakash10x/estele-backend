@@ -44,20 +44,12 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'discount_price' => 'nullable|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'images.*' => 'nullable|image|max:2048',
+            'images' => 'nullable|array',
             'category_id' => 'required|exists:categories,id',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $imagePaths = [];
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('products', 'public');
-                $imagePaths[] = asset('storage/' . $path);
-            }
         }
 
         $product = Product::create([
@@ -67,7 +59,7 @@ class ProductController extends Controller
             'price' => $request->price,
             'discount_price' => $request->discount_price,
             'stock' => $request->stock,
-            'images' => $imagePaths,
+            'images' => $request->images ?? [],
             'category_id' => $request->category_id,
         ]);
 
@@ -89,7 +81,7 @@ class ProductController extends Controller
             'price' => 'sometimes|required|numeric|min:0',
             'discount_price' => 'nullable|numeric|min:0',
             'stock' => 'sometimes|required|integer|min:0',
-            'images.*' => 'nullable|image|max:2048',
+            'images' => 'nullable|array',
             'category_id' => 'sometimes|required|exists:categories,id',
         ]);
 
@@ -97,18 +89,7 @@ class ProductController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $product->fill($request->except('images'));
-
-        if ($request->hasFile('images')) {
-            $imagePaths = [];
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('products', 'public');
-                $imagePaths[] = asset('storage/' . $path);
-            }
-            $product->images = $imagePaths;
-        }
-
-        $product->save();
+        $product->update($request->all());
 
         return response()->json($product);
     }
